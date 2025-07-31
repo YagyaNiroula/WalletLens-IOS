@@ -161,7 +161,6 @@ struct AddTransactionView: View {
     
     private func saveTransaction() {
         guard let amountValue = Double(amount), amountValue > 0 else { 
-            print("Invalid amount: \(amount)")
             return 
         }
         
@@ -169,7 +168,6 @@ struct AddTransactionView: View {
         let trimmedCategory = category.trimmingCharacters(in: .whitespacesAndNewlines)
         
         guard !trimmedCategory.isEmpty else {
-            print("Category cannot be empty")
             return
         }
         

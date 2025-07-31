@@ -8,7 +8,7 @@ struct CameraView: View {
     @State private var capturedImage: UIImage?
     @State private var extractedAmount: Double = 0.0
     @State private var isProcessing = false
-
+    
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
@@ -18,7 +18,7 @@ struct CameraView: View {
                         .font(.largeTitle)
                         .fontWeight(.bold)
                         .foregroundColor(.primary)
-
+                    
                     Text("Scan your receipts to add transactions automatically")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
@@ -28,63 +28,63 @@ struct CameraView: View {
                 .padding()
                 .background(Color(.systemBackground))
                 .shadow(color: .black.opacity(0.05), radius: 2, x: 0, y: 1)
-
+                
                 ScrollView {
                     VStack(spacing: 24) {
                         // Enhanced Camera Preview Area
                         VStack(spacing: 20) {
-                            ZStack {
+                ZStack {
                                 RoundedRectangle(cornerRadius: 20)
-                                    .fill(Color(.systemGray6))
-                                    .frame(height: 300)
-                                    .overlay(
+                        .fill(Color(.systemGray6))
+                        .frame(height: 300)
+                        .overlay(
                                         RoundedRectangle(cornerRadius: 20)
-                                            .stroke(Color(.systemGray4), lineWidth: 2)
-                                    )
+                                .stroke(Color(.systemGray4), lineWidth: 2)
+                        )
                                     .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
-
-                                VStack(spacing: 20) {
-                                    if let image = capturedImage {
-                                        Image(uiImage: image)
-                                            .resizable()
-                                            .aspectRatio(contentMode: .fit)
-                                            .frame(height: 200)
+                    
+                    VStack(spacing: 20) {
+                        if let image = capturedImage {
+                            Image(uiImage: image)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(height: 200)
                                             .cornerRadius(16)
                                             .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
-                                    } else {
-                                        VStack(spacing: 16) {
-                                            Image(systemName: "camera.fill")
+                        } else {
+                            VStack(spacing: 16) {
+                                Image(systemName: "camera.fill")
                                                 .font(.system(size: 80))
-                                                .foregroundColor(.secondary)
+                                    .foregroundColor(.secondary)
                                                 .opacity(0.6)
-
-                                            Text("Tap to scan receipt")
+                                
+                                Text("Tap to scan receipt")
                                                 .font(.title3)
                                                 .fontWeight(.semibold)
                                                 .foregroundColor(.primary)
-                                        }
-                                    }
-
-                                    if isProcessing {
+                            }
+                        }
+                        
+                        if isProcessing {
                                         HStack(spacing: 12) {
-                                            ProgressView()
+                                ProgressView()
                                                 .scaleEffect(1.2)
-                                            Text("Processing receipt...")
-                                                .font(.subheadline)
+                                Text("Processing receipt...")
+                                    .font(.subheadline)
                                                 .fontWeight(.medium)
-                                                .foregroundColor(.secondary)
-                                        }
+                                    .foregroundColor(.secondary)
+                            }
                                         .padding()
                                         .background(Color(.systemGray6))
                                         .clipShape(RoundedRectangle(cornerRadius: 12))
-                                    }
-                                }
-                            }
-                            .onTapGesture {
-                                if capturedImage == nil {
-                                    showingImagePicker = true
-                                }
-                            }
+                        }
+                    }
+                }
+                .onTapGesture {
+                    if capturedImage == nil {
+                        showingImagePicker = true
+                    }
+                }
                         }
                         .padding(.horizontal)
 
@@ -93,14 +93,14 @@ struct CameraView: View {
                             HStack {
                                 Image(systemName: "info.circle.fill")
                                     .font(.title2)
-                                    .foregroundColor(.blue)
+                                .foregroundColor(.blue)
                                 Text("How it works:")
-                                    .font(.title3)
+                                .font(.title3)
                                     .fontWeight(.bold)
                                     .foregroundColor(.primary)
-                                Spacer()
-                            }
-
+                            Spacer()
+                        }
+                        
                             VStack(spacing: 16) {
                                 InstructionStep(
                                     number: "1",
@@ -130,12 +130,12 @@ struct CameraView: View {
                                 .stroke(Color.blue.opacity(0.1), lineWidth: 1)
                         )
                         .padding(.horizontal)
-
+                
                         Spacer(minLength: 100)
                     }
                     .padding(.vertical)
                 }
-
+                
                 // Enhanced Action Buttons
                 if capturedImage != nil {
                     HStack(spacing: 16) {
@@ -151,7 +151,7 @@ struct CameraView: View {
                         .frame(maxWidth: .infinity)
                         .background(Color(.systemGray6))
                         .clipShape(RoundedRectangle(cornerRadius: 16))
-
+                        
                         Button("Process") {
                             processImage()
                         }
@@ -184,7 +184,7 @@ struct CameraView: View {
             AddTransactionFromReceiptView(viewModel: viewModel, amount: extractedAmount, image: capturedImage)
         }
     }
-
+    
     private func processImage() {
         guard let image = capturedImage else { return }
         
@@ -238,18 +238,18 @@ struct InstructionStep: View {
 struct AddTransactionFromReceiptView: View {
     @ObservedObject var viewModel: MainViewModel
     @Environment(\.dismiss) private var dismiss
-
+    
     let amount: Double
     let image: UIImage?
-
+    
     @State private var description = "Receipt"
     @State private var category = "Food & Dining"  // Initialize with valid default
-
+    
     private let categories = [
         "Food & Dining", "Transportation", "Shopping", "Entertainment",
         "Utilities", "Healthcare", "Education", "Insurance", "Other"
     ]
-
+    
     var body: some View {
         NavigationView {
             VStack(spacing: 20) {
@@ -261,7 +261,7 @@ struct AddTransactionFromReceiptView: View {
                         .cornerRadius(16)
                         .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
                 }
-
+                
                 VStack(spacing: 20) {
                     // Enhanced Amount Display
                     VStack(spacing: 8) {
@@ -271,49 +271,49 @@ struct AddTransactionFromReceiptView: View {
 
                         Text("$\(String(format: "%.2f", amount))")
                             .font(.largeTitle)
-                            .fontWeight(.bold)
-                            .foregroundColor(.green)
+                        .fontWeight(.bold)
+                        .foregroundColor(.green)
                     }
                     .padding()
                     .background(Color(.systemGray6))
                     .clipShape(RoundedRectangle(cornerRadius: 16))
-
+                    
                     // Enhanced Form Fields
                     VStack(spacing: 16) {
-                        VStack(spacing: 8) {
-                            Text("Description")
-                                .font(.headline)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-
-                            TextField("Description", text: $description)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                    VStack(spacing: 8) {
+                        Text("Description")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        
+                        TextField("Description", text: $description)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
                                 .padding(.horizontal, 16)
                                 .padding(.vertical, 12)
                                 .background(Color(.systemGray6))
                                 .clipShape(RoundedRectangle(cornerRadius: 12))
-                        }
-
-                        VStack(spacing: 8) {
-                            Text("Category")
-                                .font(.headline)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-
-                            Picker("Category", selection: $category) {
-                                ForEach(categories, id: \.self) { cat in
-                                    Text(cat).tag(cat)
-                                }
-                            }
-                            .pickerStyle(MenuPickerStyle())
+                    }
+                    
+                    VStack(spacing: 8) {
+                        Text("Category")
+                            .font(.headline)
                             .frame(maxWidth: .infinity, alignment: .leading)
+                        
+                        Picker("Category", selection: $category) {
+                            ForEach(categories, id: \.self) { cat in
+                                Text(cat).tag(cat)
+                            }
+                        }
+                        .pickerStyle(MenuPickerStyle())
+                        .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal, 16)
                             .padding(.vertical, 12)
-                            .background(Color(.systemGray6))
+                        .background(Color(.systemGray6))
                             .clipShape(RoundedRectangle(cornerRadius: 12))
                         }
                     }
                 }
                 .padding()
-
+                
                 Spacer()
             }
             .navigationTitle("Add Receipt Transaction")
@@ -326,7 +326,7 @@ struct AddTransactionFromReceiptView: View {
                     .foregroundColor(.red)
                     .fontWeight(.semibold)
                 }
-
+                
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Save") {
                         saveTransaction()
@@ -337,10 +337,9 @@ struct AddTransactionFromReceiptView: View {
             }
         }
     }
-
+    
     private func saveTransaction() {
         guard amount > 0 else {
-            print("Invalid amount: \(amount)")
             return
         }
 
@@ -348,7 +347,6 @@ struct AddTransactionFromReceiptView: View {
         let trimmedCategory = category.trimmingCharacters(in: .whitespacesAndNewlines)
 
         guard !trimmedCategory.isEmpty else {
-            print("Category cannot be empty")
             return
         }
 
@@ -359,7 +357,7 @@ struct AddTransactionFromReceiptView: View {
             type: .expense,
             date: Date()
         )
-
+        
         viewModel.addTransaction(transaction)
         dismiss()
     }

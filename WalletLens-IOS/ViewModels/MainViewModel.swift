@@ -1,5 +1,13 @@
 import Foundation
 import SwiftUI
+import WidgetKit
+
+// Widget transaction structure for sharing data
+struct WidgetTransaction: Codable {
+    let amount: Double
+    let type: String
+    let date: Date
+}
 
 class MainViewModel: ObservableObject {
     @Published var transactions: [Transaction] = []
@@ -30,7 +38,6 @@ class MainViewModel: ObservableObject {
                 transactions = decodedTransactions
             }
         } catch {
-            print("Error loading transactions: \(error)")
             transactions = []
         }
     }
@@ -42,7 +49,6 @@ class MainViewModel: ObservableObject {
                 reminders = decodedReminders
             }
         } catch {
-            print("Error loading reminders: \(error)")
             reminders = []
         }
     }
@@ -51,8 +57,36 @@ class MainViewModel: ObservableObject {
         do {
             let encoded = try JSONEncoder().encode(transactions)
             userDefaults.set(encoded, forKey: transactionsKey)
+            
+                        // Save to shared UserDefaults for widget
+            let sharedDefaults = UserDefaults(suiteName: "group.com.walletlens.widget") ?? UserDefaults.standard
+                // Convert transactions to widget format
+                let widgetTransactions = transactions.map { transaction in
+                    WidgetTransaction(
+                        amount: transaction.amount,
+                        type: transaction.type.rawValue,
+                        date: transaction.date
+                    )
+                }
+                
+                let widgetEncoded = try JSONEncoder().encode(widgetTransactions)
+                sharedDefaults.set(widgetEncoded, forKey: "widget_transactions")
+                sharedDefaults.synchronize() // Force immediate save
+                
+                // Refresh the widget immediately
+                WidgetCenter.shared.reloadAllTimelines()
+                
+                // Also refresh after a short delay to ensure data is written
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                    WidgetCenter.shared.reloadAllTimelines()
+                }
+                
+                // Additional refresh after 3 seconds
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                    WidgetCenter.shared.reloadAllTimelines()
+                }
         } catch {
-            print("Error saving transactions: \(error)")
+            // Handle error silently
         }
     }
     
@@ -61,7 +95,7 @@ class MainViewModel: ObservableObject {
             let encoded = try JSONEncoder().encode(reminders)
             userDefaults.set(encoded, forKey: remindersKey)
         } catch {
-            print("Error saving reminders: \(error)")
+            // Handle error silently
         }
     }
     

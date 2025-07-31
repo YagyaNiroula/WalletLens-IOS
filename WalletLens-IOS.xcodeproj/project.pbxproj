@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		3C8BAAFD2E3BE15900E04186 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C8BAAFC2E3BE15900E04186 /* WidgetKit.framework */; };
+		3C8BAB102E3BE15900E04186 /* WalletLensWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 3C8BAAFA2E3BE15900E04186 /* WalletLensWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		3C8BAB162E3BEADF00E04186 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C8BAAFE2E3BE15900E04186 /* SwiftUI.framework */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		3C2233D12E31D57A00F829E6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -21,13 +27,47 @@
 			remoteGlobalIDString = 3C2233C22E31D57800F829E6;
 			remoteInfo = "WalletLens-IOS";
 		};
+		3C8BAB0E2E3BE15900E04186 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3C2233BB2E31D57800F829E6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3C8BAAF92E3BE15900E04186;
+			remoteInfo = WalletLensWidgetExtension;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		3C8BAB112E3BE15900E04186 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				3C8BAB102E3BE15900E04186 /* WalletLensWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		3C2233C32E31D57800F829E6 /* WalletLens-IOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WalletLens-IOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3C2233D02E31D57A00F829E6 /* WalletLens-IOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "WalletLens-IOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3C2233DA2E31D57A00F829E6 /* WalletLens-IOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "WalletLens-IOSUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3C8BAAFA2E3BE15900E04186 /* WalletLensWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WalletLensWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		3C8BAAFC2E3BE15900E04186 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		3C8BAAFE2E3BE15900E04186 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		3C8BAB142E3BE15900E04186 /* Exceptions for "WalletLensWidget" folder in "WalletLensWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 3C8BAAF92E3BE15900E04186 /* WalletLensWidgetExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		3C2233C52E31D57800F829E6 /* WalletLens-IOS */ = {
@@ -35,14 +75,12 @@
 			path = "WalletLens-IOS";
 			sourceTree = "<group>";
 		};
-		3C2233D32E31D57A00F829E6 /* WalletLens-IOSTests */ = {
+		3C8BAB002E3BE15900E04186 /* WalletLensWidget */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "WalletLens-IOSTests";
-			sourceTree = "<group>";
-		};
-		3C2233DD2E31D57A00F829E6 /* WalletLens-IOSUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "WalletLens-IOSUITests";
+			exceptions = (
+				3C8BAB142E3BE15900E04186 /* Exceptions for "WalletLensWidget" folder in "WalletLensWidgetExtension" target */,
+			);
+			path = WalletLensWidget;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -69,6 +107,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		3C8BAAF72E3BE15900E04186 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3C8BAB162E3BEADF00E04186 /* SwiftUI.framework in Frameworks */,
+				3C8BAAFD2E3BE15900E04186 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -76,8 +123,8 @@
 			isa = PBXGroup;
 			children = (
 				3C2233C52E31D57800F829E6 /* WalletLens-IOS */,
-				3C2233D32E31D57A00F829E6 /* WalletLens-IOSTests */,
-				3C2233DD2E31D57A00F829E6 /* WalletLens-IOSUITests */,
+				3C8BAB002E3BE15900E04186 /* WalletLensWidget */,
+				3C8BAAFB2E3BE15900E04186 /* Frameworks */,
 				3C2233C42E31D57800F829E6 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -88,8 +135,18 @@
 				3C2233C32E31D57800F829E6 /* WalletLens-IOS.app */,
 				3C2233D02E31D57A00F829E6 /* WalletLens-IOSTests.xctest */,
 				3C2233DA2E31D57A00F829E6 /* WalletLens-IOSUITests.xctest */,
+				3C8BAAFA2E3BE15900E04186 /* WalletLensWidgetExtension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		3C8BAAFB2E3BE15900E04186 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3C8BAAFC2E3BE15900E04186 /* WidgetKit.framework */,
+				3C8BAAFE2E3BE15900E04186 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -102,10 +159,12 @@
 				3C2233BF2E31D57800F829E6 /* Sources */,
 				3C2233C02E31D57800F829E6 /* Frameworks */,
 				3C2233C12E31D57800F829E6 /* Resources */,
+				3C8BAB112E3BE15900E04186 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				3C8BAB0F2E3BE15900E04186 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				3C2233C52E31D57800F829E6 /* WalletLens-IOS */,
@@ -130,9 +189,6 @@
 			dependencies = (
 				3C2233D22E31D57A00F829E6 /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				3C2233D32E31D57A00F829E6 /* WalletLens-IOSTests */,
-			);
 			name = "WalletLens-IOSTests";
 			packageProductDependencies = (
 			);
@@ -153,15 +209,34 @@
 			dependencies = (
 				3C2233DC2E31D57A00F829E6 /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				3C2233DD2E31D57A00F829E6 /* WalletLens-IOSUITests */,
-			);
 			name = "WalletLens-IOSUITests";
 			packageProductDependencies = (
 			);
 			productName = "WalletLens-IOSUITests";
 			productReference = 3C2233DA2E31D57A00F829E6 /* WalletLens-IOSUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		3C8BAAF92E3BE15900E04186 /* WalletLensWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3C8BAB152E3BE15900E04186 /* Build configuration list for PBXNativeTarget "WalletLensWidgetExtension" */;
+			buildPhases = (
+				3C8BAAF62E3BE15900E04186 /* Sources */,
+				3C8BAAF72E3BE15900E04186 /* Frameworks */,
+				3C8BAAF82E3BE15900E04186 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				3C8BAB002E3BE15900E04186 /* WalletLensWidget */,
+			);
+			name = WalletLensWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = WalletLensWidgetExtension;
+			productReference = 3C8BAAFA2E3BE15900E04186 /* WalletLensWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -184,6 +259,9 @@
 						CreatedOnToolsVersion = 16.3;
 						TestTargetID = 3C2233C22E31D57800F829E6;
 					};
+					3C8BAAF92E3BE15900E04186 = {
+						CreatedOnToolsVersion = 16.3;
+					};
 				};
 			};
 			buildConfigurationList = 3C2233BE2E31D57800F829E6 /* Build configuration list for PBXProject "WalletLens-IOS" */;
@@ -203,6 +281,7 @@
 				3C2233C22E31D57800F829E6 /* WalletLens-IOS */,
 				3C2233CF2E31D57A00F829E6 /* WalletLens-IOSTests */,
 				3C2233D92E31D57A00F829E6 /* WalletLens-IOSUITests */,
+				3C8BAAF92E3BE15900E04186 /* WalletLensWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -223,6 +302,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		3C2233D82E31D57A00F829E6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3C8BAAF82E3BE15900E04186 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -253,6 +339,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		3C8BAAF62E3BE15900E04186 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -265,6 +358,11 @@
 			isa = PBXTargetDependency;
 			target = 3C2233C22E31D57800F829E6 /* WalletLens-IOS */;
 			targetProxy = 3C2233DB2E31D57A00F829E6 /* PBXContainerItemProxy */;
+		};
+		3C8BAB0F2E3BE15900E04186 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3C8BAAF92E3BE15900E04186 /* WalletLensWidgetExtension */;
+			targetProxy = 3C8BAB0E2E3BE15900E04186 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -393,8 +491,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 823XT5HX2V;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -409,6 +509,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "Yagya-Niroula.WalletLens-IOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -420,8 +521,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "WalletLens-IOS/WalletLens-IOSRelease.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -436,6 +540,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "Yagya-Niroula.WalletLens-IOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -510,6 +615,62 @@
 			};
 			name = Release;
 		};
+		3C8BAB122E3BE15900E04186 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 823XT5HX2V;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = WalletLensWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = WalletLensWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Yagya-Niroula.WalletLens-IOS.WalletLensWidget";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		3C8BAB132E3BE15900E04186 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = WalletLensWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = WalletLensWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Yagya-Niroula.WalletLens-IOS.WalletLensWidget";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -545,6 +706,15 @@
 			buildConfigurations = (
 				3C2233EB2E31D57A00F829E6 /* Debug */,
 				3C2233EC2E31D57A00F829E6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3C8BAB152E3BE15900E04186 /* Build configuration list for PBXNativeTarget "WalletLensWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3C8BAB122E3BE15900E04186 /* Debug */,
+				3C8BAB132E3BE15900E04186 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

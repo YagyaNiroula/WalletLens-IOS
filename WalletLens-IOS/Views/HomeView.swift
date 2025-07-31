@@ -4,30 +4,30 @@ struct HomeView: View {
     @ObservedObject var viewModel: MainViewModel
     @State private var showingAddTransaction = false
     @State private var showingAddReminder = false
-
+    
     var body: some View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 20) {
                     // Header
-                    VStack(spacing: 8) {
-                        Text("WalletLens")
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
-                            .foregroundColor(.primary)
-                        
-                        Text("Your Personal Finance Tracker")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    }
-                    .padding(.top, 10)
+                VStack(spacing: 8) {
+                    Text("WalletLens")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(.primary)
                     
+                        Text("Your Personal Finance Tracker")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+                    .padding(.top, 10)
+                
                     // Summary Cards Row (Income, Expense, Balance)
-                    HStack(spacing: 12) {
+                HStack(spacing: 12) {
                         // Income Card
-                        SummaryCard(
+                    SummaryCard(
                             title: "INCOME",
-                            amount: viewModel.totalIncome,
+                        amount: viewModel.totalIncome,
                             gradient: LinearGradient(
                                 colors: [Color.green.opacity(0.8), Color.green],
                                 startPoint: .topLeading,
@@ -35,14 +35,14 @@ struct HomeView: View {
                             ),
                             icon: "arrow.up.circle.fill",
                             iconColor: .white
-                        ) {
-                            showingAddTransaction = true
-                        }
-                        
+                    ) {
+                        showingAddTransaction = true
+                    }
+                    
                         // Expense Card
-                        SummaryCard(
+                    SummaryCard(
                             title: "EXPENSE",
-                            amount: viewModel.totalExpense,
+                        amount: viewModel.totalExpense,
                             gradient: LinearGradient(
                                 colors: [Color.red.opacity(0.8), Color.red],
                                 startPoint: .topLeading,
@@ -50,14 +50,14 @@ struct HomeView: View {
                             ),
                             icon: "arrow.down.circle.fill",
                             iconColor: .white
-                        ) {
-                            showingAddTransaction = true
-                        }
-                        
+                    ) {
+                        showingAddTransaction = true
+                    }
+                    
                         // Balance Card
-                        SummaryCard(
+                    SummaryCard(
                             title: "BALANCE",
-                            amount: viewModel.balance,
+                        amount: viewModel.balance,
                             gradient: LinearGradient(
                                 colors: [Color.blue.opacity(0.8), Color.blue],
                                 startPoint: .topLeading,
@@ -67,8 +67,8 @@ struct HomeView: View {
                             iconColor: .white
                         ) {
                             showingAddTransaction = true
-                        }
-                    }
+                                    }
+                                }
                     .padding(.horizontal, 20)
                     
                     // Upcoming Bills Section

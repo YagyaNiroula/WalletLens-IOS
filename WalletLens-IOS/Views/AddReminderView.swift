@@ -13,10 +13,10 @@ struct AddReminderView: View {
         NavigationView {
             VStack(spacing: 20) {
                 // Subtitle
-                Text("Set reminders for your upcoming bills")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
+                    Text("Set reminders for your upcoming bills")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
                     .padding(.top)
                 
                 // Form Fields
@@ -92,13 +92,11 @@ struct AddReminderView: View {
     
     private func saveReminder() {
         guard let amountValue = Double(amount), amountValue > 0 else { 
-            print("Invalid amount: \(amount)")
             return 
         }
         
         let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedTitle.isEmpty else {
-            print("Title cannot be empty")
             return
         }
         

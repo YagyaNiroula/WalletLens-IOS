@@ -135,10 +135,10 @@ struct TransactionsView: View {
                         )
                         .cornerRadius(12)
                         .shadow(color: .blue.opacity(0.3), radius: 8, x: 0, y: 4)
-                }
+                    }
                 .disabled(amount.isEmpty)
                 .opacity(amount.isEmpty ? 0.6 : 1.0)
-            }
+                }
             .padding(20)
             .navigationTitle("Add Transaction")
             .navigationBarTitleDisplayMode(.large)
