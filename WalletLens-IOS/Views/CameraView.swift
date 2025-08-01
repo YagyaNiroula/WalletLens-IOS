@@ -19,7 +19,7 @@ struct CameraView: View {
                         .fontWeight(.bold)
                         .foregroundColor(.primary)
                     
-                    Text("Scan your receipts to add transactions automatically")
+                    Text("Select receipt photos to add transactions automatically")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
@@ -58,10 +58,10 @@ struct CameraView: View {
                                     .foregroundColor(.secondary)
                                                 .opacity(0.6)
                                 
-                                Text("Tap to scan receipt")
-                                                .font(.title3)
-                                                .fontWeight(.semibold)
-                                                .foregroundColor(.primary)
+                                                                Text("Tap to select receipt photo")
+                                    .font(.title3)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.primary)
                             }
                         }
                         
@@ -178,7 +178,7 @@ struct CameraView: View {
             .navigationBarHidden(true)
         }
         .sheet(isPresented: $showingImagePicker) {
-            ImagePicker(selectedImage: $capturedImage, sourceType: .camera)
+            ImagePicker(selectedImage: $capturedImage, sourceType: .photoLibrary)
         }
         .sheet(isPresented: $showingAddTransaction) {
             AddTransactionFromReceiptView(viewModel: viewModel, amount: extractedAmount, image: capturedImage)

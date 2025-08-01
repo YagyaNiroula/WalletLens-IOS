@@ -1,6 +1,7 @@
 import Foundation
 import SwiftUI
 import WidgetKit
+import UserNotifications
 
 // Widget transaction structure for sharing data
 struct WidgetTransaction: Codable {
@@ -16,19 +17,25 @@ class MainViewModel: ObservableObject {
     @Published var totalExpense: Double = 0.0
     @Published var balance: Double = 0.0
     @Published var categoryTotals: [CategoryTotal] = []
+    @Published var monthlyBudget: MonthlyBudget?
     
     private let userDefaults = UserDefaults.standard
     private let transactionsKey = "transactions"
     private let remindersKey = "reminders"
+    private let budgetKey = "monthlyBudget"
+    private let notificationManager = NotificationManager.shared
     
     init() {
+        setupNotifications()
         loadData()
     }
     
     func loadData() {
         loadTransactions()
         loadReminders()
+        loadBudget()
         calculateTotals()
+        setupNotificationObservers()
     }
     
     private func loadTransactions() {
@@ -108,17 +115,34 @@ class MainViewModel: ObservableObject {
     func addReminder(_ reminder: Reminder) {
         reminders.append(reminder)
         saveReminders()
+        // Schedule notification for the reminder
+        notificationManager.scheduleBillReminder(for: reminder)
     }
     
     func deleteTransaction(_ transaction: Transaction) {
         transactions.removeAll { $0.id == transaction.id }
         saveTransactions()
         calculateTotals()
+        checkBudgetWarnings()
     }
     
     func deleteReminder(_ reminder: Reminder) {
         reminders.removeAll { $0.id == reminder.id }
         saveReminders()
+        // Cancel notification for the reminder
+        notificationManager.cancelBillReminder(for: reminder)
+    }
+    
+    func updateReminder(_ reminder: Reminder) {
+        if let index = reminders.firstIndex(where: { $0.id == reminder.id }) {
+            reminders[index] = reminder
+            saveReminders()
+            // Reschedule notification
+            notificationManager.cancelBillReminder(for: reminder)
+            if !reminder.isCompleted {
+                notificationManager.scheduleBillReminder(for: reminder)
+            }
+        }
     }
     
     private func calculateTotals() {
@@ -150,6 +174,7 @@ class MainViewModel: ObservableObject {
         balance = totalIncome - totalExpense
         
         calculateCategoryTotals()
+        updateBudgetSpending()
     }
     
     private func calculateCategoryTotals() {
@@ -181,5 +206,95 @@ class MainViewModel: ObservableObject {
         return transactions.filter { transaction in
             Calendar.current.isDate(transaction.date, equalTo: date, toGranularity: .month)
         }.sorted { $0.date > $1.date }
+    }
+    
+    // MARK: - Budget Management
+    func setMonthlyBudget(_ amount: Double) {
+        let calendar = Calendar.current
+        let currentMonth = calendar.dateInterval(of: .month, for: Date())?.start ?? Date()
+        
+        monthlyBudget = MonthlyBudget(
+            totalLimit: amount,
+            month: currentMonth,
+            spent: totalExpense,
+            categoryBudgets: []
+        )
+        saveBudget()
+    }
+    
+    func updateBudgetSpending() {
+        guard var budget = monthlyBudget else { return }
+        budget.spent = totalExpense
+        monthlyBudget = budget
+        saveBudget()
+        checkBudgetWarnings()
+    }
+    
+    private func loadBudget() {
+        do {
+            if let data = userDefaults.data(forKey: budgetKey) {
+                let decodedBudget = try JSONDecoder().decode(MonthlyBudget.self, from: data)
+                monthlyBudget = decodedBudget
+            }
+        } catch {
+            monthlyBudget = nil
+        }
+    }
+    
+    private func saveBudget() {
+        guard let budget = monthlyBudget else { return }
+        do {
+            let encoded = try JSONEncoder().encode(budget)
+            userDefaults.set(encoded, forKey: budgetKey)
+        } catch {
+            // Handle error silently
+        }
+    }
+    
+    // MARK: - Notification Management
+    private func setupNotifications() {
+        notificationManager.requestNotificationPermission()
+        notificationManager.setupNotificationCategories()
+    }
+    
+    private func setupNotificationObservers() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleReminderCompleted),
+            name: .reminderCompleted,
+            object: nil
+        )
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleShowBudgetDetails),
+            name: .showBudgetDetails,
+            object: nil
+        )
+    }
+    
+    @objc private func handleReminderCompleted(_ notification: Notification) {
+        guard let reminder = notification.object as? Reminder else { return }
+        updateReminder(Reminder(
+            title: reminder.title,
+            amount: reminder.amount,
+            dueDate: reminder.dueDate,
+            isCompleted: true,
+            notes: reminder.notes
+        ))
+    }
+    
+    @objc private func handleShowBudgetDetails(_ notification: Notification) {
+        // This will be handled by the view to navigate to budget details
+        // For now, we'll just print a message
+        print("Show budget details requested")
+    }
+    
+    private func checkBudgetWarnings() {
+        guard let budget = monthlyBudget else { return }
+        notificationManager.checkBudgetWarnings(
+            currentExpense: totalExpense,
+            monthlyBudget: budget.totalLimit
+        )
     }
 }

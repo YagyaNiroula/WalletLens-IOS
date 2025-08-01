@@ -4,6 +4,7 @@ struct HomeView: View {
     @ObservedObject var viewModel: MainViewModel
     @State private var showingAddTransaction = false
     @State private var showingAddReminder = false
+    @State private var showingBudgetSettings = false
     
     var body: some View {
         NavigationView {
@@ -71,6 +72,13 @@ struct HomeView: View {
                                 }
                     .padding(.horizontal, 20)
                     
+                    // Budget Section
+                    BudgetSection(
+                        budget: viewModel.monthlyBudget,
+                        totalExpense: viewModel.totalExpense,
+                        onTap: { showingBudgetSettings = true }
+                    )
+                    
                     // Upcoming Bills Section
                     UpcomingBillsSection(
                         reminders: viewModel.reminders,
@@ -89,6 +97,14 @@ struct HomeView: View {
                         transactions: viewModel.transactions
                     )
                     
+                    // Test Notifications Button (for development)
+                    Button("Test Notifications") {
+                        testNotifications()
+                    }
+                    .font(.caption)
+                    .foregroundColor(.blue)
+                    .padding(.top, 20)
+                    
                     Spacer(minLength: 100) // Space for bottom navigation
                 }
             }
@@ -100,6 +116,139 @@ struct HomeView: View {
         .sheet(isPresented: $showingAddReminder) {
             AddReminderView(viewModel: viewModel)
         }
+        .sheet(isPresented: $showingBudgetSettings) {
+            BudgetSettingsView(viewModel: viewModel)
+        }
+    }
+    
+    private func testNotifications() {
+        // Test bill reminder
+        let testReminder = Reminder(
+            title: "Test Bill",
+            amount: 50.0,
+            dueDate: Date().addingTimeInterval(5), // 5 seconds from now
+            notes: "Test notification"
+        )
+        NotificationManager.shared.scheduleBillReminder(for: testReminder)
+        
+        // Test budget warning
+        NotificationManager.shared.checkBudgetWarnings(currentExpense: 1000.0, monthlyBudget: 800.0)
+    }
+}
+
+// MARK: - Budget Section
+struct BudgetSection: View {
+    let budget: MonthlyBudget?
+    let totalExpense: Double
+    let onTap: () -> Void
+    
+    var body: some View {
+        VStack(spacing: 16) {
+            HStack {
+                Image(systemName: "chart.bar.fill")
+                    .font(.title3)
+                    .foregroundColor(.purple)
+                
+                Text("Monthly Budget")
+                    .font(.title3)
+                    .fontWeight(.bold)
+                    .foregroundColor(.primary)
+                
+                Spacer()
+                
+                Button(action: onTap) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "gear")
+                            .font(.caption)
+                            .fontWeight(.bold)
+                        Text("Settings")
+                            .font(.caption)
+                            .fontWeight(.semibold)
+                    }
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(Color.purple)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                }
+            }
+            
+            if let budget = budget {
+                VStack(spacing: 12) {
+                    // Progress Bar
+                    VStack(spacing: 8) {
+                        HStack {
+                            Text("Spent: $\(String(format: "%.2f", totalExpense))")
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.primary)
+                            
+                            Spacer()
+                            
+                            Text("Budget: $\(String(format: "%.2f", budget.totalLimit))")
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.primary)
+                        }
+                        
+                        ProgressView(value: min(totalExpense / budget.totalLimit, 1.0))
+                            .progressViewStyle(LinearProgressViewStyle(tint: budget.isOverBudget ? .red : .green))
+                            .scaleEffect(x: 1, y: 2, anchor: .center)
+                    }
+                    
+                    // Budget Status
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Remaining")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            
+                            Text("$\(String(format: "%.2f", budget.remaining))")
+                                .font(.headline)
+                                .fontWeight(.bold)
+                                .foregroundColor(budget.remaining > 0 ? .green : .red)
+                        }
+                        
+                        Spacer()
+                        
+                        VStack(alignment: .trailing, spacing: 4) {
+                            Text("Used")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            
+                            Text("\(String(format: "%.1f", budget.percentageUsed))%")
+                                .font(.headline)
+                                .fontWeight(.bold)
+                                .foregroundColor(budget.isOverBudget ? .red : .primary)
+                        }
+                    }
+                }
+                .padding()
+                .background(Color(.systemGray6))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+            } else {
+                VStack(spacing: 12) {
+                    Image(systemName: "chart.bar")
+                        .font(.title)
+                        .foregroundColor(.gray)
+                    
+                    Text("No budget set")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    
+                    Button("Set Budget") {
+                        onTap()
+                    }
+                    .font(.caption)
+                    .foregroundColor(.purple)
+                }
+                .padding(.vertical, 20)
+            }
+        }
+        .padding(20)
+        .background(Color(.systemGray6))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .padding(.horizontal, 20)
     }
 }
 
@@ -199,7 +348,7 @@ struct UpcomingBillsSection: View {
                 .padding(.vertical, 20)
             } else {
                 ForEach(reminders.prefix(3)) { reminder in
-                    ReminderRow(reminder: reminder)
+                    ReminderRow(reminder: reminder, viewModel: viewModel)
                 }
                 
                 // Add "View All" button if there are more than 3 reminders
@@ -248,7 +397,7 @@ struct AllRemindersView: View {
         NavigationView {
             List {
                 ForEach(reminders) { reminder in
-                    ReminderRow(reminder: reminder)
+                    ReminderRow(reminder: reminder, viewModel: viewModel)
                         .listRowSeparator(.hidden)
                         .listRowBackground(Color.clear)
                 }
@@ -284,10 +433,13 @@ struct AllRemindersView: View {
 // MARK: - Reminder Row
 struct ReminderRow: View {
     let reminder: Reminder
+    let viewModel: MainViewModel
     @State private var isCompleted: Bool
+    @State private var showingEditSheet = false
     
-    init(reminder: Reminder) {
+    init(reminder: Reminder, viewModel: MainViewModel) {
         self.reminder = reminder
+        self.viewModel = viewModel
         self._isCompleted = State(initialValue: reminder.isCompleted)
     }
     
@@ -310,19 +462,42 @@ struct ReminderRow: View {
             
             Spacer()
             
-            Button(action: {
-                // Mark as completed
-                isCompleted.toggle()
-            }) {
-                Image(systemName: isCompleted ? "checkmark.circle.fill" : "circle")
-                    .font(.title2)
-                    .foregroundColor(isCompleted ? .green : .gray)
+            HStack(spacing: 12) {
+                // Edit Button
+                Button(action: {
+                    showingEditSheet = true
+                }) {
+                    Image(systemName: "pencil")
+                        .font(.title3)
+                        .foregroundColor(.blue)
+                }
+                
+                // Complete/Incomplete Button
+                Button(action: {
+                    // Mark as completed
+                    isCompleted.toggle()
+                    let updatedReminder = Reminder(
+                        title: reminder.title,
+                        amount: reminder.amount,
+                        dueDate: reminder.dueDate,
+                        isCompleted: isCompleted,
+                        notes: reminder.notes
+                    )
+                    viewModel.updateReminder(updatedReminder)
+                }) {
+                    Image(systemName: isCompleted ? "checkmark.circle.fill" : "circle")
+                        .font(.title2)
+                        .foregroundColor(isCompleted ? .green : .gray)
+                }
             }
         }
         .padding(12)
         .background(Color.white)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .opacity(isCompleted ? 0.6 : 1.0)
+        .sheet(isPresented: $showingEditSheet) {
+            EditReminderView(reminder: reminder, viewModel: viewModel)
+        }
     }
 }
 
