@@ -85,6 +85,9 @@ struct HomeView: View {
                         onAddReminder: { showingAddReminder = true },
                         viewModel: viewModel
                     )
+                    .onReceive(viewModel.objectWillChange) {
+                        print("HomeView received objectWillChange")
+                    }
                     
                     // Expense Breakdown Section
                     ExpenseBreakdownSection(
@@ -96,14 +99,6 @@ struct HomeView: View {
                     RecentTransactionsSection(
                         transactions: viewModel.transactions
                     )
-                    
-                    // Test Notifications Button (for development)
-                    Button("Test Notifications") {
-                        testNotifications()
-                    }
-                    .font(.caption)
-                    .foregroundColor(.blue)
-                    .padding(.top, 20)
                     
                     Spacer(minLength: 100) // Space for bottom navigation
                 }
@@ -119,20 +114,6 @@ struct HomeView: View {
         .sheet(isPresented: $showingBudgetSettings) {
             BudgetSettingsView(viewModel: viewModel)
         }
-    }
-    
-    private func testNotifications() {
-        // Test bill reminder
-        let testReminder = Reminder(
-            title: "Test Bill",
-            amount: 50.0,
-            dueDate: Date().addingTimeInterval(5), // 5 seconds from now
-            notes: "Test notification"
-        )
-        NotificationManager.shared.scheduleBillReminder(for: testReminder)
-        
-        // Test budget warning
-        NotificationManager.shared.checkBudgetWarnings(currentExpense: 1000.0, monthlyBudget: 800.0)
     }
 }
 
@@ -297,6 +278,17 @@ struct UpcomingBillsSection: View {
     let onAddReminder: () -> Void
     let viewModel: MainViewModel
     @State private var showingAllReminders = false
+    @State private var refreshTrigger = false
+    
+    // Force view to update when reminders change
+    @State private var lastRemindersCount = 0
+    
+    // Filter out completed bills for upcoming bills section
+    private var upcomingBills: [Reminder] {
+        let filtered = reminders.filter { !$0.isCompleted }
+        print("UpcomingBillsSection: Total reminders: \(reminders.count), Upcoming bills: \(filtered.count)")
+        return filtered
+    }
     
     var body: some View {
         VStack(spacing: 16) {
@@ -329,7 +321,7 @@ struct UpcomingBillsSection: View {
                 }
             }
             
-            if reminders.isEmpty {
+            if upcomingBills.isEmpty {
                 VStack(spacing: 12) {
                     Image(systemName: "bell.slash")
                         .font(.title)
@@ -347,12 +339,13 @@ struct UpcomingBillsSection: View {
                 }
                 .padding(.vertical, 20)
             } else {
-                ForEach(reminders.prefix(3)) { reminder in
+                ForEach(upcomingBills.prefix(3)) { reminder in
                     ReminderRow(reminder: reminder, viewModel: viewModel)
+                        .id(reminder.id) // Force view to rebuild when reminder changes
                 }
                 
-                // Add "View All" button if there are more than 3 reminders
-                if reminders.count > 3 {
+                // Add "View All" button if there are more than 3 upcoming bills
+                if upcomingBills.count > 3 {
                     Button(action: {
                         showingAllReminders = true
                     }) {
@@ -393,13 +386,55 @@ struct AllRemindersView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var showingAddReminder = false
     
+    // Separate upcoming and completed bills
+    private var upcomingBills: [Reminder] {
+        reminders.filter { !$0.isCompleted }
+    }
+    
+    private var completedBills: [Reminder] {
+        reminders.filter { $0.isCompleted }
+    }
+    
     var body: some View {
         NavigationView {
             List {
-                ForEach(reminders) { reminder in
-                    ReminderRow(reminder: reminder, viewModel: viewModel)
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(Color.clear)
+                // Upcoming Bills Section
+                if !upcomingBills.isEmpty {
+                    Section("Upcoming Bills") {
+                        ForEach(upcomingBills) { reminder in
+                            ReminderRow(reminder: reminder, viewModel: viewModel)
+                                .listRowSeparator(.hidden)
+                                .listRowBackground(Color.clear)
+                        }
+                    }
+                }
+                
+                // Completed Bills Section
+                if !completedBills.isEmpty {
+                    Section("Completed Bills") {
+                        ForEach(completedBills) { reminder in
+                            ReminderRow(reminder: reminder, viewModel: viewModel)
+                                .listRowSeparator(.hidden)
+                                .listRowBackground(Color.clear)
+                        }
+                    }
+                }
+                
+                // Empty state
+                if reminders.isEmpty {
+                    Section {
+                        VStack(spacing: 12) {
+                            Image(systemName: "bell.slash")
+                                .font(.title)
+                                .foregroundColor(.gray)
+                            
+                            Text("No bills yet")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 20)
+                    }
                 }
             }
             .listStyle(PlainListStyle())
@@ -434,13 +469,12 @@ struct AllRemindersView: View {
 struct ReminderRow: View {
     let reminder: Reminder
     let viewModel: MainViewModel
-    @State private var isCompleted: Bool
     @State private var showingEditSheet = false
+    @State private var showingMarkAsPaidAlert = false
     
-    init(reminder: Reminder, viewModel: MainViewModel) {
-        self.reminder = reminder
-        self.viewModel = viewModel
-        self._isCompleted = State(initialValue: reminder.isCompleted)
+    // Use computed property to always reflect current state
+    private var isCompleted: Bool {
+        reminder.isCompleted
     }
     
     var body: some View {
@@ -463,41 +497,92 @@ struct ReminderRow: View {
             Spacer()
             
             HStack(spacing: 12) {
-                // Edit Button
-                Button(action: {
-                    showingEditSheet = true
-                }) {
-                    Image(systemName: "pencil")
-                        .font(.title3)
-                        .foregroundColor(.blue)
+                // Status indicator
+                VStack(spacing: 2) {
+                    Text(reminder.isCompleted ? "PAID" : "DUE")
+                        .font(.caption2)
+                        .fontWeight(.bold)
+                        .foregroundColor(reminder.isCompleted ? .green : .orange)
+                    
+                    Text(reminder.isCompleted ? "✓" : "!")
+                        .font(.caption)
+                        .foregroundColor(reminder.isCompleted ? .green : .orange)
                 }
                 
                 // Complete/Incomplete Button
                 Button(action: {
-                    // Mark as completed
-                    isCompleted.toggle()
-                    let updatedReminder = Reminder(
-                        title: reminder.title,
-                        amount: reminder.amount,
-                        dueDate: reminder.dueDate,
-                        isCompleted: isCompleted,
-                        notes: reminder.notes
-                    )
-                    viewModel.updateReminder(updatedReminder)
+                    if reminder.isCompleted {
+                        // If already completed, just toggle back to unpaid
+                        var updatedReminder = reminder
+                        updatedReminder.isCompleted = false
+                        viewModel.updateReminder(updatedReminder)
+                    } else {
+                        // If not completed, show confirmation dialog
+                        showingMarkAsPaidAlert = true
+                    }
                 }) {
-                    Image(systemName: isCompleted ? "checkmark.circle.fill" : "circle")
+                    Image(systemName: reminder.isCompleted ? "checkmark.circle.fill" : "circle")
                         .font(.title2)
-                        .foregroundColor(isCompleted ? .green : .gray)
+                        .foregroundColor(reminder.isCompleted ? .green : .gray)
                 }
             }
         }
         .padding(12)
         .background(Color.white)
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .opacity(isCompleted ? 0.6 : 1.0)
+        .opacity(reminder.isCompleted ? 0.6 : 1.0)
+        .onTapGesture {
+            // Tap to edit
+            showingEditSheet = true
+        }
+        .contextMenu {
+            Button(action: {
+                showingEditSheet = true
+            }) {
+                Label("Edit Bill", systemImage: "pencil")
+            }
+            
+            Button(action: {
+                if reminder.isCompleted {
+                    // If already completed, just toggle back to unpaid
+                    var updatedReminder = reminder
+                    updatedReminder.isCompleted = false
+                    viewModel.updateReminder(updatedReminder)
+                } else {
+                    // If not completed, show confirmation dialog
+                    showingMarkAsPaidAlert = true
+                }
+            }) {
+                Label(reminder.isCompleted ? "Mark as Unpaid" : "Mark as Paid", 
+                      systemImage: reminder.isCompleted ? "circle" : "checkmark.circle.fill")
+            }
+            
+            Button(role: .destructive, action: {
+                viewModel.deleteReminder(reminder)
+            }) {
+                Label("Delete Bill", systemImage: "trash")
+            }
+        }
         .sheet(isPresented: $showingEditSheet) {
             EditReminderView(reminder: reminder, viewModel: viewModel)
         }
+        .alert("Mark as Paid", isPresented: $showingMarkAsPaidAlert) {
+            Button("Cancel", role: .cancel) { }
+            Button("Mark as Paid") {
+                markAsPaid()
+            }
+        } message: {
+            Text("Mark '\(reminder.title)' as paid? This will remove it from your upcoming bills.")
+        }
+    }
+    
+    private func markAsPaid() {
+        print("ReminderRow: Marking '\(reminder.title)' as paid")
+        // Create updated reminder with the same ID
+        var updatedReminder = reminder
+        updatedReminder.isCompleted = true
+        viewModel.updateReminder(updatedReminder)
+        print("ReminderRow: Mark as paid completed")
     }
 }
 

@@ -181,7 +181,10 @@ struct CameraView: View {
             ImagePicker(selectedImage: $capturedImage, sourceType: .photoLibrary)
         }
         .sheet(isPresented: $showingAddTransaction) {
-            AddTransactionFromReceiptView(viewModel: viewModel, amount: extractedAmount, image: capturedImage)
+            AddTransactionFromReceiptView(viewModel: viewModel, amount: extractedAmount, image: capturedImage) {
+                // Reset camera view after transaction is saved
+                resetCameraView()
+            }
         }
     }
     
@@ -198,6 +201,13 @@ struct CameraView: View {
             isProcessing = false
             showingAddTransaction = true
         }
+    }
+    
+    private func resetCameraView() {
+        capturedImage = nil
+        extractedAmount = 0.0
+        isProcessing = false
+        showingAddTransaction = false
     }
 }
 
@@ -241,6 +251,7 @@ struct AddTransactionFromReceiptView: View {
     
     let amount: Double
     let image: UIImage?
+    let onTransactionSaved: () -> Void
     
     @State private var description = "Receipt"
     @State private var category = "Food & Dining"  // Initialize with valid default
@@ -359,6 +370,7 @@ struct AddTransactionFromReceiptView: View {
         )
         
         viewModel.addTransaction(transaction)
+        onTransactionSaved() // Call the callback to reset camera view
         dismiss()
     }
 }

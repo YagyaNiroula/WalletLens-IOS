@@ -134,14 +134,28 @@ class MainViewModel: ObservableObject {
     }
     
     func updateReminder(_ reminder: Reminder) {
+        print("updateReminder called for: \(reminder.title), isCompleted: \(reminder.isCompleted)")
+        print("Current reminders count: \(reminders.count)")
+        
         if let index = reminders.firstIndex(where: { $0.id == reminder.id }) {
+            print("Found reminder at index: \(index)")
+            print("Old isCompleted: \(reminders[index].isCompleted)")
             reminders[index] = reminder
+            print("New isCompleted: \(reminders[index].isCompleted)")
             saveReminders()
             // Reschedule notification
             notificationManager.cancelBillReminder(for: reminder)
             if !reminder.isCompleted {
                 notificationManager.scheduleBillReminder(for: reminder)
             }
+            
+            // Force UI update by triggering objectWillChange
+            objectWillChange.send()
+            print("Reminder updated successfully")
+        } else {
+            print("Could not find reminder to update: \(reminder.title)")
+            print("Available reminder IDs: \(reminders.map { $0.id })")
+            print("Looking for ID: \(reminder.id)")
         }
     }
     
